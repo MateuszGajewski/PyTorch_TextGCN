@@ -29,6 +29,8 @@ class GraphConvolution(Module):
 
     def forward(self, infeatn, adj):
         support = th.spmm(infeatn, self.weight)
+        support = th.nn.functional.relu(
+            support)
         output = th.spmm(adj, support)
         if self.bias is not None:
             return output + self.bias

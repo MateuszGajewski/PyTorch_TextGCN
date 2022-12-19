@@ -19,7 +19,7 @@ from utils import preprocess_adj
 from utils import print_graph_detail
 from utils import read_file
 from utils import return_seed
-
+#from PyTorchRelevancePropagation.src.lrp import LRPModel
 th.backends.cudnn.deterministic = True
 th.backends.cudnn.benchmark = True
 warnings.filterwarnings("ignore")
@@ -125,6 +125,8 @@ class TextGCNTrainer:
         start = time()
         self.train()
         self.train_time = time() - start
+        #lrp_model = LRPModel(self.model)
+
 
     @classmethod
     def set_description(cls, desc):
@@ -217,7 +219,7 @@ def main(dataset, times):
 
     args.device = th.device('cuda') if th.cuda.is_available() else th.device('cpu')
     args.nhid = 200
-    args.max_epoch = 200
+    args.max_epoch = 10
     args.dropout = 0.5
     args.val_ratio = 0.1
     args.early_stopping = 10
@@ -260,7 +262,7 @@ if __name__ == '__main__':
     # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # for d in ["mr", "ohsumed", "R52", "R8", "20ng"]:
     #     main(d)
-    main("mr", 1)
+    main("allegro", 2)
     # main("ohsumed")
     # main("R8", 1)
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

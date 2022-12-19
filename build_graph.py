@@ -183,11 +183,12 @@ class BuildGraph:
 
 
 def main():
-    BuildGraph("mr")
+    """BuildGraph("mr")
     BuildGraph("ohsumed")
     BuildGraph("R52")
     BuildGraph("R8")
-    BuildGraph("20ng")
+    BuildGraph("20ng")"""
+    BuildGraph("allegro")
 
 
 if __name__ == '__main__':
