@@ -5,6 +5,7 @@ from time import time
 import networkx as nx
 import numpy as np
 import pandas as pd
+import torch
 import torch as th
 from sklearn.model_selection import train_test_split
 from lrv_model import XGCN
@@ -112,6 +113,7 @@ class TextGCNTrainer:
                                 nhid=self.args.nhid,
                                 nclass=self.nclass,
                                 dropout=self.args.dropout)
+
         print(self.model.parameters)
         self.model = self.model.to(self.device)
 
@@ -163,7 +165,6 @@ class TextGCNTrainer:
         for epoch in range(self.max_epoch):
             self.model.train()
             self.optimizer.zero_grad()
-            print(self.features)
             logits = self.model.forward(self.features, self.adj)
             loss = self.criterion(logits[self.train_lst],
                                   self.target[self.train_lst])
@@ -181,6 +182,7 @@ class TextGCNTrainer:
 
             if self.earlystopping(val_desc["val_loss"]):
                 break
+        torch.save(self.model.state_dict(), "/home/arabica/Documents/pythonProject/GCN_PyTorch/PyTorch_TextGCN/model")
 
     @th.no_grad()
     def val(self, x, prefix="val"):
@@ -227,6 +229,7 @@ def main(dataset, times):
     model = GCN
     model = XGCN
     print(args)
+
 
     predata = PrepareData(args)
     cudause = CudaUse()

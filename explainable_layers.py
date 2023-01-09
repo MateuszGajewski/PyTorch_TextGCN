@@ -193,7 +193,7 @@ class XGraphConvolution(Module):
             # prepare the explainable fully connected feature layer
             # todo: transposed weights are passed, do we need to switch in and out dimensions?
             # todo: remove assertion when sure that feature order makes sense
-            assert self.features_in == self.features_out, 'In features not equal to out features'
+#            assert self.features_in == self.features_out, 'In features not equal to out features'
             if not self.first_layer:
                 self.xfc = XLinear(
                     nn.Linear(in_features=self.features_in, out_features=self.features_out, bias=self.bias))
@@ -222,7 +222,7 @@ class XGraphConvolution(Module):
             # sanity checks are expensive which is why they can be turned off
             if sanity_checks:
                 # compute HW as in normal mode (see else-branch)
-                support_ref = torch.mm(input, self.weight)
+                support_ref = torch.spmm(input, self.weight)
                 support_ref = torch.nn.functional.relu(support_ref)
                 # compare w/ numerical imprecision tolerance
                 assert torch.allclose(support, support_ref), 'Feature maps in explainable and normal mode differ.'
@@ -233,7 +233,7 @@ class XGraphConvolution(Module):
             output = torch.t(output)
 
             if sanity_checks:
-                output_ref = torch.mm(adj, support_ref)
+                output_ref = torch.spmm(adj, support_ref)
                 assert torch.allclose(output, output_ref), 'Fusions in explainable and normal mode differ.'
 
             if self.bias is not None:

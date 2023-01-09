@@ -71,6 +71,4 @@ class XGCN(nn.Module):
             self.train()
         self.xgc1.set_explainable(explainable)
         self.xgc2.set_explainable(explainable)
-        self.xmaxpool2d.set_explainable(explainable)
-        self.xfc.set_explainable(explainable)
         self.__explainable = explainable
