@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import torch as th
 from sklearn.model_selection import train_test_split
-
+from lrv_model import XGCN
 from layer import GCN
 from utils import accuracy
 from utils import macro_f1
@@ -163,7 +163,7 @@ class TextGCNTrainer:
         for epoch in range(self.max_epoch):
             self.model.train()
             self.optimizer.zero_grad()
-
+            print(self.features)
             logits = self.model.forward(self.features, self.adj)
             loss = self.criterion(logits[self.train_lst],
                                   self.target[self.train_lst])
@@ -225,7 +225,7 @@ def main(dataset, times):
     args.early_stopping = 10
     args.lr = 0.02
     model = GCN
-
+    model = XGCN
     print(args)
 
     predata = PrepareData(args)
