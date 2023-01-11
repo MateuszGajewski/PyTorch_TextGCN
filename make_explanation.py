@@ -16,10 +16,11 @@ class Explanation:
         max_idx = out.argmax()
         print(out, max_idx)
         R = torch.zeros_like(out)
+        R[0][4] = out[0][4]
         _, relevance_flow = self.model.relprop(R,
-                                         lower_bound=2,
-                                         higher_bound=10)
-        print(relevance_flow['R_after_gcn_1_feature_fc'][0])
+                                         lower_bound=-1000,
+                                         higher_bound=1000)
+        print(relevance_flow['R_after_gcn_1_feature_fc'])
 
 
 

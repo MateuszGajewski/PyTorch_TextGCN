@@ -221,10 +221,10 @@ def main(dataset, times):
 
     args.device = th.device('cuda') if th.cuda.is_available() else th.device('cpu')
     args.nhid = 200
-    args.max_epoch = 10
+    args.max_epoch = 100
     args.dropout = 0.5
     args.val_ratio = 0.1
-    args.early_stopping = 10
+    args.early_stopping = 100
     args.lr = 0.02
     model = GCN
     model = XGCN
