@@ -122,8 +122,8 @@ class CorpusProcess:
         self.save_classes()
 
     def concat_files(self):
-        train = pd.read_csv(self.train_corpus_name, sep="\t")
-        test = pd.read_csv(self.test_corpus_name, sep="\t")
+        train = pd.read_csv(self.train_corpus_name, sep="\t")[0:100]
+        test = pd.read_csv(self.test_corpus_name, sep="\t")[0:100]
         train['split'] = 'train'
         test['split'] = 'test'
         df = pd.concat([train, test])

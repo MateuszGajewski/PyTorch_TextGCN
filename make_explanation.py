@@ -13,6 +13,13 @@ class Explanation:
 
     def forward(self, features, adj):
         out = self.model(features, adj)
+        max_idx = out.argmax()
+        print(out, max_idx)
+        R = torch.zeros_like(out)
+        _, relevance_flow = self.model.relprop(R,
+                                         lower_bound=2,
+                                         higher_bound=10)
+        print(relevance_flow['R_after_gcn_1_feature_fc'][0])
 
 
 
@@ -22,7 +29,7 @@ if __name__ == '__main__':
     args.dataset = 'allegro'
     data =  PrepareData(args)
     print(data.features)
-    nfeat = 20747
+    nfeat = 618
     nhid = 200
     nclass = 5
     dropout = 0

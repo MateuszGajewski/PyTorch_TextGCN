@@ -33,9 +33,10 @@ class XLinear(nn.Linear):
     """
 
     def __init__(self, linear):
-        super(XLinear, self).__init__(in_features=linear.in_features,
-                                      out_features=linear.out_features,
-                                      bias=linear.bias)  # super(nn.Linear, self).__init__() in notebook
+        #super(XLinear, self).__init__(in_features=linear.in_features,
+        #                              out_features=linear.out_features,
+        #                              bias=linear.bias)  #
+        super(nn.Linear, self).__init__() #in notebook
         self.bias = linear.bias
         if self.bias is not None:
             raise NotImplementedError
@@ -117,11 +118,11 @@ class XFirstLinear(nn.Linear):
         W = torch.transpose(self.weight, 0, 1)
         V = torch.clamp(W, min=0)  # T
         U = torch.clamp(W, max=0)  # T
-        X = self.X
-        L = self.X * 0 + lower_bound
-        H = self.X * 0 + higher_bound
+        X = self.X.to_dense()
+        L = X * 0 + lower_bound
+        H = X * 0 + higher_bound
 
-        Z = torch.mm(self.X, W)
+        Z = torch.mm(X, W)
         Z = Z - torch.mm(L, V)
         Z = Z - torch.mm(H, U)
         Z = Z + 1e-9
@@ -193,7 +194,7 @@ class XGraphConvolution(Module):
             # prepare the explainable fully connected feature layer
             # todo: transposed weights are passed, do we need to switch in and out dimensions?
             # todo: remove assertion when sure that feature order makes sense
-#            assert self.features_in == self.features_out, 'In features not equal to out features'
+            #assert self.features_in == self.features_out, 'In features not equal to out features'
             if not self.first_layer:
                 self.xfc = XLinear(
                     nn.Linear(in_features=self.features_in, out_features=self.features_out, bias=self.bias))
@@ -203,6 +204,8 @@ class XGraphConvolution(Module):
                                                   bias=self.bias))
             self.xfc.set_explainable(True)
             weight_t = torch.t(self.weight)
+            #print(weight_t)
+            #print(self.xfc.weight.data)
             # PyTorch computes XW^T in nn.Linear, thus to compute XW we must pass W^T
             self.xfc.weight.data = weight_t
 
@@ -211,7 +214,10 @@ class XGraphConvolution(Module):
                                              out_features=adj.shape[0],
                                              bias=self.bias))
             self.adj_xfc.set_explainable(True)
-            self.adj_xfc.weight.data = adj
+            #adj_t = torch.t(adj)
+            #print(adj_t.to_dense())
+            #print(self.adj_xfc.weight.data)
+            self.adj_xfc.weight.data = adj.to_dense()
 
             # compute HW w/ explainable fully connected feature layer
             support = self.xfc(input)

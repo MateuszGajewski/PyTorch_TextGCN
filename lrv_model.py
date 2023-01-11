@@ -42,14 +42,13 @@ class XGCN(nn.Module):
             raise NotImplementedError
         # perform LRP and cache relevance tensors after each layer
         Rs = dict()
-        Rs['R_after_out_layer'] = tensor_to_list(R)
-        R = self.xfc.relprop(R)
-        Rs['R_after_last_fc'] = tensor_to_list(R)
-        R = self.xmaxpool2d.relprop(R)
-        Rs['R_after_max_pooling_layer'] = tensor_to_list(R)
+
+
         R, R_adj2 = self.xgc2.relprop(R)
         Rs['R_after_gcn_2_adjacency_fc'] = tensor_to_list(R_adj2)
         Rs['R_after_gcn_2_feature_fc'] = tensor_to_list(R)
+        R = self.relu.relprop(R)
+        Rs['R_after_relu'] = tensor_to_list(R)
         R, R_adj1 = self.xgc1.relprop(R, lower_bound=lower_bound, higher_bound=higher_bound)
         Rs['R_after_gcn_1_adjacency_fc'] = tensor_to_list(R_adj1)
         Rs['R_after_gcn_1_feature_fc'] = tensor_to_list(R)
@@ -57,7 +56,7 @@ class XGCN(nn.Module):
         if sanity_checks:
             # check that conversation property holds
             R1 = torch.sum(R).item()
-            R2 = torch.sum(torch.tensor(np.array(Rs['R_after_out_layer']))).item()
+            R2 = torch.sum(torch.tensor(np.array(Rs['R_after_gcn_2_adjacency_fc']))).item()
             diff = abs(R1 - R2)
             if diff >= 1e-8:
                 warnings.warn('Conservation property violated with a difference of {}'.format(diff))
